@@ -1,50 +1,71 @@
-# Welcome to your Expo app 👋
+# DoctorApp - نظام حجز واستشارات طبية متكامل
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+تطبيق هاتف محمول متطور مبني باستخدام **React Native** و **Expo**، مصمم لتسهيل عملية التواصل بين المرضى والأطباء وتنظيم الحجوزات الطبية بشكل سلس وفعال.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 المميزات الحالية (Current Features)
 
+- **نظام تسجيل دخول وانشاء حساب**: دعم كامل لتسجيل المستخدمين عبر البريد الإلكتروني وكلمة المرور مع حفظ الجلسة باستخدام AsyncStorage.
+- **واجهة مستخدم عصرية**: تصميم أنيق يعتمد على **NativeWind (Tailwind CSS)** لتوفير تجربة مستخدم مريحة (UX).
+- **التنقل السلس**: نظام تنقل احترافي باستخدام **React Navigation** (Stack & Tabs).
+- **مكونات مخصصة**: مثل الـ Header الديناميكي الذي يدعم الإشعارات والعناوين المتغيرة.
+- **تكامل مع Firebase**: استخدام Firebase للتعامل مع البيانات والمصادقة.
+
+---
+
+## 🛠️ التقنيات المستخدمة (Tech Stack)
+
+- **Framework**: Expo / React Native
+- **Styling**: NativeWind (Tailwind CSS)
+- **Navigation**: React Navigation (Bottom Tabs & Native Stack)
+- **Backend**: Firebase (Authentication & Firestore)
+- **Icons**: Lucide React & Ionicons
+
+---
+
+## 📅 خارطة الطريق للتطوير المستقبلي (Development Roadmap)
+
+نعمل باستمرار على تحسين التطبيق وإضافة ميزات جديدة. إليك ما هو مخطط له في المراحل القادمة:
+
+### 1️⃣ المرحلة الأولى: تحسين تجربة المريض
+- [ ] **البحث المتقدم**: إمكانية البحث عن الأطباء حسب التخصص، المنطقة، أو التقييم.
+- [ ] **نظام الحجز الفوري**: اختيار الموعد المتاح من تقويم الطبيب وتأكيده مباشرة.
+- [ ] **إدارة الملف الطبي**: تمكن المريض من رفع الأشعة والتحاليل الخاصة به لمشاركتها مع الطبيب.
+
+### 2️⃣ المرحلة الثانية: لوحة تحكم الطبيب
+- [ ] **إدارة المواعيد**: لوحة خاصة للطبيب لقبول أو تعديل أو إلغاء الحجوزات.
+- [ ] **الاستشارات أونلاين**: دعم المحادثات الكتابية (Chat) والاتصال المرئي (Video Call) داخل التطبيق.
+- [ ] **الوصفات الطبية الإلكترونية**: إمكانية إرسال الروشتة للمريض عبر التطبيق.
+
+### 3️⃣ المرحلة الثالثة: الميزات المتقدمة
+- [ ] **نظام الإشعارات الذكي**: تنبيهات بمواعيد الأدوية والحجوزات القادمة.
+- [ ] **تعدد اللغات**: دعم كامل للغتين العربية والإنجليزية.
+- [ ] **نظام المدفوعات**: تكامل مع بوابات الدفع الإلكتروني (Stripe / PayPal) لدفع رسوم الكشف.
+
+---
+
+## 💻 طريقة التشغيل (Setup Guide)
+
+1. قم بتحميل المستودع:
+   ```bash
+   git clone https://github.com/YourUsername/DoctorApp.git
+   ```
+2. قم بتثبيت المكتبات:
    ```bash
    npm install
    ```
-
-2. Start the app
-
+3. تشغيل المشروع:
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🤝 المساهمة
+المساهمات مرحب بها دائماً! لا تتردد في فتح **Issue** أو تقديم **Pull Request**.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+---
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## 📄 الترخيص
+هذا المشروع متاح تحت رخصة MIT.
