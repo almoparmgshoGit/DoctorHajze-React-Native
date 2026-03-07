@@ -15,6 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
+// Using standard getAuth for Expo Go compatibility
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 
