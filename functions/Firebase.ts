@@ -14,24 +14,38 @@ export const registerAndLogin = async (email: string, password: string, name?: s
         // Update display name if provided
         if (name) {
             await updateProfile(userCredential.user, { displayName: name });
+            await userCredential.user.reload();
         }
+
+        const user = auth.currentUser;
+        const userData = {
+            uid: user?.uid,
+            email: user?.email,
+            displayName: user?.displayName,
+        };
 
         Alert.alert("Success", "تم إنشاء الحساب وتسجيل الدخول بنجاح");
         await AsyncStorage.setItem("isLogin", 'True');
         await AsyncStorage.setItem("Account", 'True');
-        await AsyncStorage.setItem("user", JSON.stringify(userCredential.user));
+        await AsyncStorage.setItem("user", JSON.stringify(userData));
 
-        return userCredential.user;
+        return user;
     } catch (error: any) {
         // لو الحساب موجود، اعمل Login تلقائي
         if (error.code === "auth/email-already-in-use") {
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName,
+                };
                 Alert.alert("Success", "تم تسجيل الدخول بنجاح");
                 await AsyncStorage.setItem("isLogin", 'True');
                 await AsyncStorage.setItem("Account", 'True');
-                await AsyncStorage.setItem("user", JSON.stringify(userCredential.user));
-                return userCredential.user;
+                await AsyncStorage.setItem("user", JSON.stringify(userData));
+                return user;
             } catch (loginError: any) {
                 Alert.alert("Error", loginError.message);
             }
