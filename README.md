@@ -48,7 +48,7 @@
 
 1. قم بتحميل المستودع:
    ```bash
-   git clone https://github.com/YourUsername/DoctorApp.git
+   git clone https://github.com/almoparmgshoGit/DoctorApp.git
    ```
 2. قم بتثبيت المكتبات:
    ```bash
