@@ -1,10 +1,16 @@
 import { ScrollView, Text, View } from 'react-native';
+import Header from '../Custom/Header';
 
-function Hojazaty({ text }) {
+interface HojazatyProps {
+    text?: string;
+}
+
+const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
     return (
         <View className="flex-1  bg-background">
+            <Header title={text} />
             <View className="flex-1" style={{ flex: 1 }} >
-                <Text className="text-2xl font-bold text-text-muted ml-6 mt-6 ">{text}</Text>
+
                 <ScrollView contentContainerStyle={{ flexGrow: 4 }}>
                     <View className="w-full px-4 items-center mt-7 pb-10">
                         <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">

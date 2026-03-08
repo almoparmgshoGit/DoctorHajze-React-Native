@@ -23,9 +23,9 @@ export default function BottomTabNavigator() {
                 headerShown: false,
             }}
         >
-            <Tab.Screen name="Home" options={{ tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> }} component={HomeScreen} />
-            <Tab.Screen name="Hojazaty" options={{ tabBarIcon: ({ color, size }) => <FontAwesome6 name="user-doctor" size={size} color={color} /> }} component={Hojazaty} />
-            <Tab.Screen name="Profile" options={{ tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }} component={SettingsScreen} />
+            <Tab.Screen name="الرئيسية" options={{ tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> }} component={HomeScreen} />
+            <Tab.Screen name="الحجوزاتي" options={{ tabBarIcon: ({ color, size }) => <FontAwesome6 name="user-doctor" size={size} color={color} /> }} component={Hojazaty} />
+            <Tab.Screen name="الملف الشخصي" options={{ tabBarIcon: ({ color, size }) => <Ionicons name="person-outline" size={size} color={color} /> }} component={SettingsScreen} />
         </Tab.Navigator>
     );
 }
