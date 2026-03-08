@@ -1,3 +1,4 @@
+import { logout } from '@/functions/Firebase';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from "react";
@@ -10,10 +11,9 @@ const Header = ({ title }) => {
             <View className="flex-row justify-between items-center w-full">
                 <Text className="text-2xl font-bold text-white  text-center">{title}</Text>
                 <TouchableOpacity className="w-10 h-10 bg-white rounded-full  justify-center items-center"> <Text><Ionicons name="notifications" size={24} color="#000000" /></Text></TouchableOpacity>
+                <TouchableOpacity className='bg-white' onPress={() => logout()}><Text className='bg-white'>Logout</Text></TouchableOpacity>
             </View>
-
-
-        </View>
+        </View >
     );
 };
 

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
 import { Alert } from "react-native";
 import { auth, db } from "../config/firebase";
 interface Booking {
@@ -11,23 +11,34 @@ interface Booking {
 
 }
 
+
 // ✅ Register + Auto Login
 export const registerAndLogin = async (email: string, password: string, name?: string) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        let user = userCredential.user;
 
         // Update display name if provided
         if (name) {
-            await updateProfile(userCredential.user, { displayName: name });
-            await userCredential.user.reload();
+            await updateProfile(user, { displayName: name });
+            await user.reload();
+            user = auth.currentUser || user;
         }
 
-        const user = auth.currentUser;
         const userData = {
-            uid: user?.uid,
-            email: user?.email,
-            displayName: user?.displayName,
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
         };
+
+        // Ensure user document exists in Firestore
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            name: user.displayName || name || "",
+            email: user.email,
+            rol: "user",
+            createdAt: serverTimestamp(),
+        }, { merge: true });
 
         Alert.alert("Success", "تم إنشاء الحساب وتسجيل الدخول بنجاح");
         await AsyncStorage.setItem("isLogin", 'True');
@@ -46,6 +57,17 @@ export const registerAndLogin = async (email: string, password: string, name?: s
                     email: user.email,
                     displayName: user.displayName,
                 };
+
+                // Even on login fallback, ensure the document exists
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    name: user.displayName || "",
+                    email: user.email,
+                    rol: "user",
+                    // Use serverTimestamp if it's new, but merge:true prevents overwriting existing createdAt if we handle it carefully
+                    // However, setDoc with merge:true is safe.
+                }, { merge: true });
+
                 Alert.alert("Success", "تم تسجيل الدخول بنجاح");
                 await AsyncStorage.setItem("isLogin", 'True');
                 await AsyncStorage.setItem("Account", 'True');
@@ -55,10 +77,12 @@ export const registerAndLogin = async (email: string, password: string, name?: s
                 Alert.alert("Error", loginError.message);
             }
         } else {
+            console.error("Registration error:", error);
             Alert.alert("Error", error.message);
         }
     }
 };
+
 
 export const logout = async (navigation: any) => {
 
@@ -81,15 +105,40 @@ export const addBooking = async (booking: Booking) => {
 
     if (!user) {
         Alert.alert("Error", "يجب تسجيل الدخول أولاً");
-
         return;
     }
 
-    const colRef = collection(db, "bookings");
+    try {
+        const colRef = collection(db, "bookings");
+        await addDoc(colRef, {
+            ...booking,
+            userId: user.uid,
+            userName: user.displayName || user.email,
+            createdAt: serverTimestamp(),
+            status: "pending",
+        });
+        Alert.alert("Success", "تم حجز الموعد بنجاح");
+    } catch (error: any) {
+        Alert.alert("Error", error.message);
+    }
+};
 
-    await addDoc(colRef, {
-        ...booking,
-        userId: user.uid,        // ✅ تلقائي
-        userName: user.displayName, // ✅ تلقائي
-    });
+// Get User Bookings
+export const getBookings = async () => {
+    const user = auth.currentUser;
+    if (!user) return [];
+
+    try {
+        const { query, where, getDocs, orderBy } = await import("firebase/firestore");
+        const q = query(
+            collection(db, "bookings"),
+            where("userId", "==", user.uid),
+            orderBy("createdAt", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (error: any) {
+        console.error("Error fetching bookings:", error);
+        return [];
+    }
 };
