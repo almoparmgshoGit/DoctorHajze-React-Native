@@ -1,7 +1,8 @@
+import { auth } from "@/config/firebase";
+import { addBooking } from "@/functions/Firebase";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
-
 interface AddBookingProps {
     modalVisible: boolean;
     setModalVisible: (visible: boolean) => void;
@@ -11,7 +12,27 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
     const [selectedClinic, setSelectedClinic] = React.useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
+    const [clinic, setClinic] = React.useState<string>("");
+    const [date, setDate] = React.useState<string>("");
+    const [note, setNote] = React.useState<string>("");
+    const [time, setTime] = React.useState<string>("222");
+    const user = auth.currentUser;
+
     const clinics = ["عيادة القاهرة", "عيادة الجيزة", "عيادة الإسكندرية"];
+
+
+
+
+    const add = async () => {
+        const booking = {        // ✅ object مش array
+            clinicName: clinic,
+            notes: note,
+            date: date,
+            time: time,
+
+        };
+        await addBooking(booking)
+    }
 
     return (
         <Modal
@@ -85,13 +106,15 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
                                     placeholder="اكتب أي معلومات إضافية هنا..."
                                     multiline
                                     textAlignVertical="top"
+                                    value={note}
+                                    onChangeText={setNote}
                                 />
                             </View>
 
                             {/* Submit Button */}
                             <TouchableOpacity
                                 className="bg-blue-600 rounded-xl py-4 items-center mt-4 shadow-lg shadow-blue-500/30"
-                                onPress={() => setModalVisible(false)}
+                                onPress={() => { add(); setModalVisible(false); }}
                             >
                                 <Text className="text-white font-bold text-lg">تأكيد الحجز</Text>
                             </TouchableOpacity>
