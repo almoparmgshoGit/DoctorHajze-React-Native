@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
-import { ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../Custom/Header';
 
 interface HojazatyProps {
@@ -55,10 +55,13 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
 
                 </ScrollView>
             </View>
-            <View className=' relative z-1 flex-row gap-5 items-center ml-[220px] bg-blue-500 rounded-full  p-4'>
-                <FontAwesome name="plus" size={25} color={"#fff"} />
-                <Text className='text-xl text-center font-bold text-white'>حجز جديد </Text>
-            </View>
+            <TouchableOpacity
+                className='absolute bottom-6 right-6 z-10 flex-row gap-3 items-center bg-blue-500 rounded-full px-5 py-4'
+                onPress={() => {/* navigation */ }}
+            >
+                <Text className='text-base font-bold text-white'>حجز جديد</Text>
+                <FontAwesome name="plus" size={20} color={"#fff"} />
+            </TouchableOpacity>
         </View>
     );
 };
