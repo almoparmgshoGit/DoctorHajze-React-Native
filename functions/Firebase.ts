@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { Alert } from "react-native";
 import { auth, db } from "../config/firebase";
+export { auth, db };
 interface Booking {
     clinicName: string;
     date: string;
@@ -36,7 +37,7 @@ export const registerAndLogin = async (email: string, password: string, name?: s
             uid: user.uid,
             name: user.displayName || name || "",
             email: user.email,
-            rol: "user",
+            role: "user",
             createdAt: serverTimestamp(),
         }, { merge: true });
 
@@ -63,7 +64,7 @@ export const registerAndLogin = async (email: string, password: string, name?: s
                     uid: user.uid,
                     name: user.displayName || "",
                     email: user.email,
-                    rol: "user",
+                    role: "user",
                     // Use serverTimestamp if it's new, but merge:true prevents overwriting existing createdAt if we handle it carefully
                     // However, setDoc with merge:true is safe.
                 }, { merge: true });
@@ -123,22 +124,30 @@ export const addBooking = async (booking: Booking) => {
     }
 };
 
+
+
+
 // Get User Bookings
 export const getBookings = async () => {
     const user = auth.currentUser;
-    if (!user) return [];
+    console.log("Current user in getBookings:", user?.uid);
+    if (!user) {
+        console.log("No user found, returning empty array");
+        return [];
+    }
 
     try {
-        const { query, where, getDocs, orderBy } = await import("firebase/firestore");
         const q = query(
             collection(db, "bookings"),
             where("userId", "==", user.uid),
             orderBy("createdAt", "desc")
         );
         const querySnapshot = await getDocs(q);
+        console.log("Fetched bookings count:", querySnapshot.size);
         return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error: any) {
         console.error("Error fetching bookings:", error);
+        // If there's an index error, this will log the link to create it.
         return [];
     }
 };

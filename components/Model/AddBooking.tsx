@@ -1,5 +1,4 @@
-import { auth } from "@/config/firebase";
-import { addBooking } from "@/functions/Firebase";
+import { addBooking, auth } from "@/functions/Firebase";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -12,10 +11,9 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
     const [selectedClinic, setSelectedClinic] = React.useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
-    const [clinic, setClinic] = React.useState<string>("");
-    const [date, setDate] = React.useState<string>("");
+    const [date, setDate] = React.useState<string>(new Date().toLocaleDateString());
     const [note, setNote] = React.useState<string>("");
-    const [time, setTime] = React.useState<string>("222");
+    const [time, setTime] = React.useState<string>("10:00 AM");
     const user = auth.currentUser;
 
     const clinics = ["عيادة القاهرة", "عيادة الجيزة", "عيادة الإسكندرية"];
@@ -24,14 +22,18 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
 
 
     const add = async () => {
-        const booking = {        // ✅ object مش array
-            clinicName: clinic,
+        if (!selectedClinic) {
+            alert("يرجى اختيار العيادة");
+            return;
+        }
+        const booking = {
+            clinicName: selectedClinic,
             notes: note,
             date: date,
             time: time,
-
         };
-        await addBooking(booking)
+        await addBooking(booking);
+        setModalVisible(false);
     }
 
     return (
@@ -92,10 +94,23 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
                             {/* Date Selection */}
                             <View>
                                 <Text className="text-gray-600 font-bold mb-2">التاريخ</Text>
-                                <View className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center">
-                                    <Text className="text-gray-400">اختر التاريخ</Text>
-                                    <Ionicons name="calendar-outline" size={20} color="#9ca3af" />
-                                </View>
+                                <TextInput
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-right"
+                                    placeholder="2024-05-10"
+                                    value={date}
+                                    onChangeText={setDate}
+                                />
+                            </View>
+
+                            {/* Time Selection */}
+                            <View>
+                                <Text className="text-gray-600 font-bold mb-2">الوقت</Text>
+                                <TextInput
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-right"
+                                    placeholder="10:00 AM"
+                                    value={time}
+                                    onChangeText={setTime}
+                                />
                             </View>
 
                             {/* Notes */}
@@ -114,7 +129,7 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
                             {/* Submit Button */}
                             <TouchableOpacity
                                 className="bg-blue-600 rounded-xl py-4 items-center mt-4 shadow-lg shadow-blue-500/30"
-                                onPress={() => { add(); setModalVisible(false); }}
+                                onPress={add}
                             >
                                 <Text className="text-white font-bold text-lg">تأكيد الحجز</Text>
                             </TouchableOpacity>
