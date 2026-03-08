@@ -1,10 +1,17 @@
+import { db } from "@/config/firebase"; // ✅ جيب db من الكونفيج
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { Alert } from "react-native";
 import { auth } from "../config/firebase";
 
-
-
+interface Booking {
+    clinicName: string;
+    date: string;
+    time: string;
+    notes?: string;
+    userId: string;
+}
 
 // ✅ Register + Auto Login
 export const registerAndLogin = async (email: string, password: string, name?: string) => {
@@ -64,5 +71,29 @@ export const logout = async (navigation: any) => {
         navigation.navigate("Login");
     } catch (error: any) {
         Alert.alert("Error", error.message);
+    }
+};
+
+// Logec 
+
+// Add Booking
+
+export const addBooking = async (booking: Booking) => {
+    try {
+        // ✅ ID تلقائي للكولكشن + userId محفوظ جوّا الداتا
+        const colRef = collection(db, "bookings");
+
+        await addDoc(colRef, {
+            ...booking,
+            status: "pending",
+            createdAt: serverTimestamp(),
+        });
+
+        Alert.alert("✅ نجاح", "تم إضافة الحجز بنجاح");
+        return true;
+
+    } catch (error: any) {
+        Alert.alert("❌ خطأ", error.message);
+        return false;
     }
 };
