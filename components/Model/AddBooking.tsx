@@ -73,6 +73,7 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
         const booking = {
             clinicName: selectedClinic,
             notes: note,
+            userId: user?.displayName,
             date: date.toLocaleDateString('en-GB'), // e.g., 08/03/2026
             time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }), // e.g., 10:00 PM
         };
