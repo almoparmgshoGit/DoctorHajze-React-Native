@@ -56,6 +56,7 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
                                 <Text className="text-white  font-bold text-xl">{booking.date}</Text>
                                 <Text className="text-white  font-bold text-xl">{booking.time}</Text>
                                 <Text className="text-white  font-bold text-xl">{booking.clinicName}</Text>
+                                <Text className="text-white  font-bold text-xl">{booking.userName}</Text>
                                 <Text style={{ backgroundColor: booking.status === "confirmed" ? "green" : booking.status === "pending" ? "#f1c232" : "red" }} className="text-white   rounded-full px-2 py-1 text-center mt-4 w-40  justify-center items-center font-bold text-sm">{booking.status}</Text>
                             </View>
                         ))}

@@ -13,7 +13,7 @@ interface Booking {
 }
 
 
-// ✅ Register + Auto Login
+//  Register + Auto Login
 export const registerAndLogin = async (email: string, password: string, name?: string) => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -151,12 +151,19 @@ export const getBookings = async (passedUid?: string) => {
         const q = query(
             collection(db, "bookings"),
             where("userId", "==", userId)
-            // orderBy("createdAt", "desc") // Temporary fix: remove to bypass indexing requirement
         );
 
         const querySnapshot = await getDocs(q);
         console.log("Fetched bookings count:", querySnapshot.size);
-        return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // Manual sort (Newest first) to avoid indexing error while delivering same result
+        return data.sort((a: any, b: any) => {
+            const timeA = a.createdAt?.seconds || 0;
+            const timeB = b.createdAt?.seconds || 0;
+            return timeB - timeA;
+        });
     } catch (error: any) {
         console.error("Error fetching bookings:", error);
         return [];
@@ -174,5 +181,22 @@ export const getClinics = async () => {
     } catch (error: any) {
         console.error("Error fetching clinics:", error);
         return [];
+    }
+};
+
+// Get Current User Data
+export const getUserData = async () => {
+    const user = auth.currentUser;
+    if (!user) return null;
+
+    try {
+        const userDoc = await getDocs(query(collection(db, "users"), where("uid", "==", user.uid)));
+        if (!userDoc.empty) {
+            return userDoc.docs[0].data();
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching user data:", error);
+        return null;
     }
 };
