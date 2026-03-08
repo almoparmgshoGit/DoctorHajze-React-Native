@@ -1,7 +1,8 @@
-import { addBooking, auth } from "@/functions/Firebase";
+import { addBooking, auth, getClinics } from "@/functions/Firebase";
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import React from "react";
-import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 interface AddBookingProps {
     modalVisible: boolean;
     setModalVisible: (visible: boolean) => void;
@@ -10,13 +11,47 @@ interface AddBookingProps {
 const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }) => {
     const [selectedClinic, setSelectedClinic] = React.useState<string | null>(null);
     const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
-
-    const [date, setDate] = React.useState<string>(new Date().toLocaleDateString());
+    const [clinics, setClinics] = React.useState<any[]>([]);
+    const [loading, setLoading] = React.useState(false);
+    const [date, setDate] = React.useState<Date>(new Date());
+    const [showDatePicker, setShowDatePicker] = React.useState(false);
+    const [showTimePicker, setShowTimePicker] = React.useState(false);
     const [note, setNote] = React.useState<string>("");
-    const [time, setTime] = React.useState<string>("10:00 AM");
+
     const user = auth.currentUser;
 
-    const clinics = ["عيادة القاهرة", "عيادة الجيزة", "عيادة الإسكندرية"];
+    const onDateChange = (event: any, selectedDate?: Date) => {
+        setShowDatePicker(Platform.OS === 'ios');
+        if (selectedDate) setDate(selectedDate);
+    };
+
+    const onTimeChange = (event: any, selectedTime?: Date) => {
+        setShowTimePicker(Platform.OS === 'ios');
+        if (selectedTime) {
+            const newDate = new Date(date);
+            newDate.setHours(selectedTime.getHours());
+            newDate.setMinutes(selectedTime.getMinutes());
+            setDate(newDate);
+        }
+    };
+
+    const fetchClinics = async () => {
+        setLoading(true);
+        try {
+            const data = await getClinics();
+            setClinics(data);
+        } catch (error) {
+            console.error("Error in fetchClinics:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        if (modalVisible) {
+            fetchClinics();
+        }
+    }, [modalVisible]);
 
 
 
@@ -26,13 +61,28 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
             alert("يرجى اختيار العيادة");
             return;
         }
+        if (!note) {
+            alert("يرجى إدخال ملاحظات");
+            return;
+        }
+        if (!date) {
+            alert("يرجى اختيار التاريخ");
+            return;
+        }
+
         const booking = {
             clinicName: selectedClinic,
             notes: note,
-            date: date,
-            time: time,
+            date: date.toLocaleDateString('en-GB'), // e.g., 08/03/2026
+            time: date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }), // e.g., 10:00 PM
         };
         await addBooking(booking);
+        setClinics([]);
+        setSelectedClinic(null);
+        setNote("");
+
+        setShowDatePicker(false);
+        setShowTimePicker(false);
         setModalVisible(false);
     }
 
@@ -73,20 +123,26 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
 
                                 {isDropdownOpen && (
                                     <View className="bg-white border border-gray-200 rounded-xl mt-2 overflow-hidden shadow-lg absolute top-full w-full z-50">
-                                        {clinics.map((clinic, index) => (
-                                            <TouchableOpacity
-                                                key={index}
-                                                className={`px-4 py-3 ${index !== clinics.length - 1 ? 'border-b border-gray-100' : ''} ${selectedClinic === clinic ? 'bg-blue-50' : ''}`}
-                                                onPress={() => {
-                                                    setSelectedClinic(clinic);
-                                                    setIsDropdownOpen(false);
-                                                }}
-                                            >
-                                                <Text className={`text-right ${selectedClinic === clinic ? 'text-blue-600 font-bold' : 'text-gray-700'}`}>
-                                                    {clinic}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        ))}
+                                        {loading ? (
+                                            <View className="p-4"><Text className="text-center text-gray-500">جاري التحميل...</Text></View>
+                                        ) : clinics.length === 0 ? (
+                                            <View className="p-4"><Text className="text-center text-gray-500">لا توجد عيادات متاحة</Text></View>
+                                        ) : (
+                                            clinics.map((clinic: any, index: number) => (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    className={`px-4 py-3 ${index !== clinics.length - 1 ? 'border-b border-gray-100' : ''} ${selectedClinic === (clinic.name || clinic.clinicName) ? 'bg-blue-50' : ''}`}
+                                                    onPress={() => {
+                                                        setSelectedClinic(clinic.name || clinic.clinicName);
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    <Text className={`text-right ${selectedClinic === (clinic.name || clinic.clinicName) ? 'text-blue-600 font-bold' : 'text-gray-700'}`}>
+                                                        {clinic.name || clinic.clinicName}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            ))
+                                        )}
                                     </View>
                                 )}
                             </View>
@@ -94,23 +150,55 @@ const AddBooking: React.FC<AddBookingProps> = ({ modalVisible, setModalVisible }
                             {/* Date Selection */}
                             <View>
                                 <Text className="text-gray-600 font-bold mb-2">التاريخ</Text>
-                                <TextInput
-                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-right"
-                                    placeholder="2024-05-10"
-                                    value={date}
-                                    onChangeText={setDate}
-                                />
+                                <TouchableOpacity
+                                    onPress={() => setShowDatePicker(true)}
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center"
+                                >
+                                    <Text className="text-gray-800 font-bold">
+                                        {date.toLocaleDateString('en-GB')}
+                                    </Text>
+                                    <View className="flex-row items-center gap-2">
+                                        <Text className="text-blue-600 font-bold text-xs">تعديل</Text>
+                                        <Ionicons name="calendar-outline" size={20} color="#3b82f6" />
+                                    </View>
+                                </TouchableOpacity>
+
+                                {showDatePicker && (
+                                    <DateTimePicker
+                                        value={date}
+                                        mode="date"
+                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        onChange={onDateChange}
+                                        minimumDate={new Date()}
+                                    />
+                                )}
                             </View>
 
                             {/* Time Selection */}
                             <View>
                                 <Text className="text-gray-600 font-bold mb-2">الوقت</Text>
-                                <TextInput
-                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-right"
-                                    placeholder="10:00 AM"
-                                    value={time}
-                                    onChangeText={setTime}
-                                />
+                                <TouchableOpacity
+                                    onPress={() => setShowTimePicker(true)}
+                                    className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 flex-row justify-between items-center"
+                                >
+                                    <Text className="text-gray-800 font-bold">
+                                        {date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                                    </Text>
+                                    <View className="flex-row items-center gap-2">
+                                        <Text className="text-blue-600 font-bold text-xs">تعديل</Text>
+                                        <Ionicons name="time-outline" size={20} color="#3b82f6" />
+                                    </View>
+                                </TouchableOpacity>
+
+                                {showTimePicker && (
+                                    <DateTimePicker
+                                        value={date}
+                                        mode="time"
+                                        display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                                        is24Hour={false}
+                                        onChange={onTimeChange}
+                                    />
+                                )}
                             </View>
 
                             {/* Notes */}

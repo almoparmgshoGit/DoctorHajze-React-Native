@@ -13,12 +13,13 @@ interface HojazatyProps {
 const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
     const [modalVisible, setModalVisible] = useState(false);
     const [bookings, setBookings] = useState<any>([]);
+    const [clinics, setClinics] = useState<any>([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchBookings = async () => {
+    const fetchBookings = async (uid?: string) => {
         setLoading(true);
         try {
-            const data = await getBookings();
+            const data = await getBookings(uid);
             setBookings(data);
         } catch (error) {
             console.error("Error in fetchBookings:", error);
@@ -27,10 +28,13 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
         }
     }
 
+
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
             if (user) {
-                fetchBookings();
+                fetchBookings(user.uid);
+
             }
         });
         return unsubscribe;
@@ -43,7 +47,7 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
                 <ScrollView
                     contentContainerStyle={{ flexGrow: 4 }}
                     refreshControl={
-                        <RefreshControl refreshing={loading} onRefresh={fetchBookings} />
+                        <RefreshControl refreshing={loading} onRefresh={() => fetchBookings(auth.currentUser?.uid)} />
                     }
                 >
                     <View className="w-full px-4 items-center mt-7 pb-10">
@@ -52,7 +56,7 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
                                 <Text className="text-white  font-bold text-xl">{booking.date}</Text>
                                 <Text className="text-white  font-bold text-xl">{booking.time}</Text>
                                 <Text className="text-white  font-bold text-xl">{booking.clinicName}</Text>
-                                <Text className="text-white  bg-green-500 rounded-full px-2 py-1 text-center mt-4 w-20 font-bold text-sm">{booking.status}</Text>
+                                <Text style={{ backgroundColor: booking.status === "confirmed" ? "green" : booking.status === "pending" ? "#f1c232" : "red" }} className="text-white   rounded-full px-2 py-1 text-center mt-4 w-40  justify-center items-center font-bold text-sm">{booking.status}</Text>
                             </View>
                         ))}
 
