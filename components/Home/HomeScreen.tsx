@@ -3,6 +3,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { onAuthStateChanged } from "firebase/auth";
 import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Header from '../Custom/Header';
 
 const HomeScreen = () => {
@@ -44,14 +45,46 @@ const HomeScreen = () => {
             <View>
                 <Text className="text-2xl font-bold text-text-muted ml-6  mt-6">الحجز القادم</Text>
                 <View className="w-full px-4 items-center mt-7">
-                    <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 justify-center text-text-main mt-4 bg-primary border border-border rounded-lg">
-                        <Text className="text-white  font-bold text-xl">غدا</Text>
-                        <Text className="text-white  font-bold text-xl">10:00 AM</Text>
-                        <Text className="text-white  font-bold text-xl">عيادة الدكتور احمد</Text>
-                        <Text className="text-white  font-bold text-xl">100 جنيه</Text>
+                    <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                        <View className="mt-4 gap-4">
+                            <Text className="text-white   font-bold text-xl">غدا </Text>
+                            <Text className="text-white  font-bold text-xl">10:00 AM</Text>
+                            <Text className="text-white  font-bold text-xl">عيادة الدكتور احمد</Text>
+                            <Text className="text-white  font-bold text-xl">100 جنيه</Text>
+                        </View>
                     </View>
 
                 </View>
+            </View>
+
+            <View className="">
+                <Text className="text-2xl font-bold text-text-muted ml-6 mt-6 ">اخر الخجوزات</Text>
+                <ScrollView>
+                    <View className="w-full px-4 items-center mt-7">
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                        <View style={{ direction: 'rtl' }} className="w-full  px-4 py-2 text-text-main mt-4 bg-primary border border-border rounded-lg">
+                            <Text>امس</Text>
+                        </View>
+                    </View>
+
+                </ScrollView>
             </View>
 
         </View>
