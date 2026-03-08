@@ -2,16 +2,19 @@ import { FontAwesome } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../Custom/Header';
+import AddBooking from '../Model/AddBooking';
 
 interface HojazatyProps {
     text?: string;
 }
 
 const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
+    const [modalVisible, setModalVisible] = React.useState(false);
+
     return (
         <View className="flex-1  bg-background">
             <Header title={text} />
-            <View className="flex-1" style={{ flex: 1 }} >
+            <View className="flex-1"  >
 
                 <ScrollView contentContainerStyle={{ flexGrow: 4 }}>
                     <View className="w-full px-4 items-center mt-7 pb-10">
@@ -57,11 +60,13 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
             </View>
             <TouchableOpacity
                 className='absolute bottom-6 right-6 z-10 flex-row gap-3 items-center bg-blue-500 rounded-full px-5 py-4'
-                onPress={() => {/* navigation */ }}
+                onPress={() => setModalVisible(true)}
             >
                 <Text className='text-base font-bold text-white'>حجز جديد</Text>
                 <FontAwesome name="plus" size={20} color={"#fff"} />
             </TouchableOpacity>
+
+            <AddBooking modalVisible={modalVisible} setModalVisible={setModalVisible} />
         </View>
     );
 };
