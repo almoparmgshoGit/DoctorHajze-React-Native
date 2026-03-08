@@ -1,3 +1,5 @@
+import { FontAwesome } from '@expo/vector-icons';
+import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import Header from '../Custom/Header';
 
@@ -50,7 +52,12 @@ const Hojazaty: React.FC<HojazatyProps> = ({ text = " الحجوزات" }) => {
                         </View>
                     </View>
 
+
                 </ScrollView>
+            </View>
+            <View className=' relative z-1 flex-row gap-5 items-center ml-[220px] bg-blue-500 rounded-full  p-4'>
+                <FontAwesome name="plus" size={25} color={"#fff"} />
+                <Text className='text-xl text-center font-bold text-white'>حجز جديد </Text>
             </View>
         </View>
     );
