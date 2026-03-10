@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { Alert } from "react-native";
 import { auth, db } from "../config/firebase";
 export { auth, db };
@@ -236,13 +236,18 @@ export const getNotification = async () => {
         const snapshot = await getDocs(
             query(
                 collection(db, "notifications"),
-                where("userId", "==", user.uid),
-                orderBy("date", "desc") //  ترتيب من الأحدث
+                where("userId", "==", user.uid)
             )
         );
 
-        // ✅ ترجع الداتا
-        return snapshot;
+        // ترتيب يدوي من الأحدث للأقدم
+        const sortedDocs = snapshot.docs.sort((a, b) => {
+            const timeA = a.data().date?.seconds || 0;
+            const timeB = b.data().date?.seconds || 0;
+            return timeB - timeA;
+        });
+
+        return { docs: sortedDocs };
 
     } catch (error) {
         console.error("Error Get notification:", error);

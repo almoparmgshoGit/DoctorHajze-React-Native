@@ -3,7 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { NotificationsModal } from '../Custom/notificationsModal';
+import NotificationsModal from '../Custom/notificationsModal';
 const Header = ({ title }) => {
     const [visible, setVisible] = useState(false);
     const navigation = useNavigation();
