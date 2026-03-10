@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, orderBy, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { Alert } from "react-native";
 import { auth, db } from "../config/firebase";
 export { auth, db };
@@ -129,6 +129,7 @@ export const addBooking = async (booking: Booking) => {
             status: "pending",
         });
         Alert.alert("Success", "تم حجز الموعد بنجاح");
+        notification("تم حجز الموعد ", "الحجز بتاعك تحت المراجعه برجاء الانتظار قليلا", 'نجاح')
     } catch (error: any) {
         Alert.alert("Error", error.message);
     }
@@ -200,3 +201,51 @@ export const getUserData = async () => {
         return null;
     }
 };
+
+
+export const notification = async (titel: string, body: string, status: string) => {
+    const user = auth.currentUser;
+
+    if (!user) return null; //  لو مفيش يوزر
+
+    try {
+        await addDoc(collection(db, 'notifications'), {
+            titel,       //  shorthand
+            body,
+            status,
+            read: false,
+            userId: user.uid,
+            date: serverTimestamp(),
+        });
+
+        return true;  //  ترجع true لو نجح
+
+    } catch (error) {
+        console.error("Error adding notification:", error);
+        return null;
+    }
+}
+
+
+export const getNotification = async () => {
+    const user = auth.currentUser;
+
+    if (!user) return []; // ✅
+
+    try {
+        const snapshot = await getDocs(
+            query(
+                collection(db, "notifications"),
+                where("userId", "==", user.uid),
+                orderBy("date", "desc") //  ترتيب من الأحدث
+            )
+        );
+
+        // ✅ ترجع الداتا
+        return snapshot;
+
+    } catch (error) {
+        console.error("Error Get notification:", error);
+        return [];
+    }
+}
