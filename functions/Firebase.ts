@@ -1,4 +1,4 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { addDoc, collection, doc, getDocs, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { Alert } from "react-native";
@@ -19,18 +19,11 @@ export const registerAndLogin = async (email: string, password: string, name?: s
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         let user = userCredential.user;
 
-        // Update display name if provided
         if (name) {
             await updateProfile(user, { displayName: name });
             await user.reload();
             user = auth.currentUser || user;
         }
-
-        const userData = {
-            uid: user.uid,
-            email: user.email,
-            displayName: user.displayName,
-        };
 
         // Ensure user document exists in Firestore
         await setDoc(doc(db, "users", user.uid), {
@@ -42,10 +35,6 @@ export const registerAndLogin = async (email: string, password: string, name?: s
         }, { merge: true });
 
         Alert.alert("Success", "تم إنشاء الحساب وتسجيل الدخول بنجاح");
-        await AsyncStorage.setItem("isLogin", 'True');
-        await AsyncStorage.setItem("Account", 'True');
-        await AsyncStorage.setItem("user", JSON.stringify(userData));
-
         return user;
     } catch (error: any) {
         // لو الحساب موجود، اعمل Login تلقائي
@@ -53,26 +42,15 @@ export const registerAndLogin = async (email: string, password: string, name?: s
             try {
                 const userCredential = await signInWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
-                const userData = {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: user.displayName,
-                };
 
-                // Even on login fallback, ensure the document exists
                 await setDoc(doc(db, "users", user.uid), {
                     uid: user.uid,
                     name: user.displayName || "",
                     email: user.email,
                     role: "user",
-                    // Use serverTimestamp if it's new, but merge:true prevents overwriting existing createdAt if we handle it carefully
-                    // However, setDoc with merge:true is safe.
                 }, { merge: true });
 
                 Alert.alert("Success", "تم تسجيل الدخول بنجاح");
-                await AsyncStorage.setItem("isLogin", 'True');
-                await AsyncStorage.setItem("Account", 'True');
-                await AsyncStorage.setItem("user", JSON.stringify(userData));
                 return user;
             } catch (loginError: any) {
                 Alert.alert("Error", loginError.message);
@@ -85,21 +63,10 @@ export const registerAndLogin = async (email: string, password: string, name?: s
 };
 
 
-export const logout = async (navigation: any) => {
+export const logout = async () => {
     try {
-        // Specifically remove our auth keys instead of clearing everything
-        await AsyncStorage.multiRemove(["isLogin", "user"]);
         await auth.signOut();
-
-        // Reset navigation stack to Login to prevent back navigation
-        if (navigation) {
-            navigation.reset({
-                index: 0,
-                routes: [{ name: "Login" }],
-            });
-        }
-
-        Alert.alert("Success", "تم تسجيل الخروج بنجاح");
+        // Firebase onAuthStateChanged in StackNavigator handles navigation automatically
     } catch (error: any) {
         console.error("Logout Error:", error);
         Alert.alert("Error", "حدث خطأ أثناء تسجيل الخروج");

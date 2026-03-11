@@ -1,34 +1,32 @@
 import { logout } from '@/functions/Firebase';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import React, { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import NotificationsModal from '../Custom/notificationsModal';
+
 const Header = ({ title }) => {
     const [visible, setVisible] = useState(false);
-    const navigation = useNavigation();
 
     return (
-        <View className="p-4 bg-primary border-b border-gray-200 w-full h-20 mt-10 rounded-b-3xl justify-center items-center">
-            <View className="flex-row justify-between items-center w-full">
-                <Text className="text-2xl font-bold text-white text-center">{title}</Text>
-
+        <View style={styles.header}>
+            <View style={styles.row}>
                 <TouchableOpacity
-                    className="w-10 h-10 bg-white rounded-full justify-center items-center shadow-sm"
-                    onPress={() => setVisible(true)}
+                    style={styles.iconBtn}
+                    onPress={() => logout()}
                 >
-                    <Ionicons name="notifications" size={24} color="#2563eb" />
+                    <Ionicons name="log-out-outline" size={20} color="#A0AEC0" />
                 </TouchableOpacity>
 
+                <Text style={styles.title}>{title}</Text>
+
                 <TouchableOpacity
-                    className='bg-red-500 px-4 py-2 rounded-xl shadow-sm'
-                    onPress={() => logout(navigation)}
+                    style={styles.iconBtn}
+                    onPress={() => setVisible(true)}
                 >
-                    <Text className='text-white font-bold'>Logout</Text>
+                    <Ionicons name="notifications-outline" size={20} color="#A0AEC0" />
                 </TouchableOpacity>
             </View>
 
-            {/* ✅ Modal جوّا الـ return مش برا */}
             <NotificationsModal
                 visible={visible}
                 onClose={() => setVisible(false)}
@@ -37,6 +35,34 @@ const Header = ({ title }) => {
     );
 };
 
-
+const styles = StyleSheet.create({
+    header: {
+        paddingHorizontal: 20,
+        paddingTop: 54,
+        paddingBottom: 14,
+        backgroundColor: '#FAFAFA',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+    },
+    row: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 17,
+        fontWeight: '600',
+        color: '#4A5568',
+        letterSpacing: 0.3,
+    },
+    iconBtn: {
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        backgroundColor: '#F5F5F5',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});
 
 export default Header;

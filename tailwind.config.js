@@ -10,14 +10,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#2563eb",     // Deep Blue (Trust)
-        secondary: "#64748b",   // Slate Gray
-        accent: "#38bdf8",      // Sky Blue (Freshness)
-        background: "#ffffff",  // White
-        surface: "#f8fafc",     // Near-white for cards
-        "text-main": "#0f172a", // Dark Blue-Black
-        "text-muted": "#64748b",// Muted Gray
-        border: "#e2e8f0",      // Light Gray border
+        primary: "#5B8FB9",       // Calm Blue
+        "primary-dark": "#301B3F",// Dark accent
+        secondary: "#94A3B8",     // Soft Slate
+        accent: "#7EC8E3",        // Light Sky
+        background: "#F5F5F5",    // Warm Light Gray
+        surface: "#FFFFFF",       // White cards
+        "text-main": "#2D3748",   // Soft Dark
+        "text-muted": "#718096",  // Muted Gray
+        border: "#E2E8F0",        // Light Border
+        "calm-green": "#68D391",  // Soft Green
+        "calm-red": "#FC8181",    // Soft Red
+        "calm-yellow": "#F6E05E", // Soft Yellow
       },
     },
   },
